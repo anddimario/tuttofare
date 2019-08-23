@@ -1,12 +1,14 @@
 # Use an official Python runtime as a parent image
 FROM python:3.7
 
-RUN apt-get install pipenv
-
 # todo: install and start ssh-agent
+RUN pip install pipenv
 
 COPY . .
 
 RUN pipenv install
 
-CMD ["pipenv", "run", "python", "relive.py"]
+RUN chmod +x entrypoint.sh
+
+#CMD ["pipenv", "run", "python", "relive.py"]
+ENTRYPOINT [ "./entrypoint.sh" ]
