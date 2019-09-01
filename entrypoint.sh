@@ -2,7 +2,7 @@
 
 if [ -z "$SSH_AUTH_SOCK" ] ; then
   eval `ssh-agent -s`
-  ssh-add relive
+  ssh-add tuttofare
 fi
 
-pipenv run python relive.py
+pipenv run python tuttofare.py

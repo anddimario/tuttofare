@@ -10,5 +10,5 @@ RUN pipenv install
 
 RUN chmod +x entrypoint.sh
 
-#CMD ["pipenv", "run", "python", "relive.py"]
+#CMD ["pipenv", "run", "python", "tuttofare.py"]
 ENTRYPOINT [ "./entrypoint.sh" ]

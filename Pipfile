@@ -5,8 +5,12 @@ name = "pypi"
 
 [packages]
 fabric = "*"
-PyYAML = "*"
 slackclient = "*"
+requests = "*"
+boto3 = "*"
+pyyaml = "*"
+uuid = "*"
+dictor = "*"
 
 [dev-packages]
 pylint = "*"

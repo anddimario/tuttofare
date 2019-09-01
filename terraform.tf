@@ -36,7 +36,7 @@ data "aws_subnet_ids" "all" {
 #
 
 resource "aws_iam_role" "instance-role" {
-  name = "aws-batch-relive-role"
+  name = "aws-batch-tuttofare-role"
   path = "/BatchSample/"
   assume_role_policy = <<EOF
 {
@@ -61,7 +61,7 @@ resource "aws_iam_role_policy_attachment" "instance-role" {
 }
 
 resource "aws_iam_instance_profile" "instance-role" {
-  name = "aws-batch-relive-role"
+  name = "aws-batch-tuttofare-role"
   role = "${aws_iam_role.instance-role.name}"
 }
 
@@ -90,8 +90,8 @@ resource "aws_iam_role_policy_attachment" "aws-batch-service-role" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole"
 }
 
-resource "aws_security_group" "relive-batch" {
-  name = "aws-batch-relive-security-group"
+resource "aws_security_group" "tuttofare-batch" {
+  name = "aws-batch-tuttofare-security-group"
   description = "AWS Batch Sample Security Group"
   vpc_id = "${data.aws_vpc.default.id}"
 
@@ -103,8 +103,8 @@ resource "aws_security_group" "relive-batch" {
   }
 }
 
-resource "aws_batch_compute_environment" "relive" {
-  compute_environment_name = "relive"
+resource "aws_batch_compute_environment" "tuttofare" {
+  compute_environment_name = "tuttofare"
   compute_resources {
     instance_role = "${aws_iam_instance_profile.instance-role.arn}"
     instance_type = [
@@ -113,7 +113,7 @@ resource "aws_batch_compute_environment" "relive" {
     max_vcpus = 2
     min_vcpus = 0
     security_group_ids = [
-      "${aws_security_group.relive-batch.id}"
+      "${aws_security_group.tuttofare-batch.id}"
     ]
     subnets = [
       "${data.aws_subnet_ids.all.ids}"
@@ -125,17 +125,17 @@ resource "aws_batch_compute_environment" "relive" {
   depends_on = [ "aws_iam_role_policy_attachment.aws-batch-service-role" ]
 }
 
-resource "aws_batch_job_queue" "relive" {
-  name = "relive-queue"
+resource "aws_batch_job_queue" "tuttofare" {
+  name = "tuttofare-queue"
   state = "ENABLED"
   priority = 1
   compute_environments = [ 
-    "${aws_batch_compute_environment.relive.arn}"
+    "${aws_batch_compute_environment.tuttofare.arn}"
   ]
 }
 
 resource "aws_iam_role" "job-role" {
-  name = "aws-batch-relive-job-role"
+  name = "aws-batch-tuttofare-job-role"
   path = "/BatchSample/"
   assume_role_policy = <<EOF
 {
@@ -154,8 +154,8 @@ resource "aws_iam_role" "job-role" {
 EOF
 }
 
-resource "aws_batch_job_definition" "relive-job" {
-  name = "relive-job"
+resource "aws_batch_job_definition" "tuttofare-job" {
+  name = "tuttofare-job"
   type = "container"
   container_properties = <<CONTAINER_PROPERTIES
 {
@@ -168,7 +168,7 @@ resource "aws_batch_job_definition" "relive-job" {
     "pipenv",
     "run",
     "python",
-    "relive.py"
+    "tuttofare.py"
   ]
 }
 CONTAINER_PROPERTIES
@@ -185,7 +185,7 @@ data "archive_file" "lambda_zip" {
 
 ## lambda resource + iam
 resource "aws_iam_role" "lambda-role" {
-  name = "relive-function-role"
+  name = "tuttofare-function-role"
   path = "/BatchSample/"
   assume_role_policy = <<EOF
 {
@@ -205,7 +205,7 @@ EOF
 }
 
 resource "aws_iam_policy" "lambda-policy" {
-  name = "relive-function-policy"
+  name = "tuttofare-function-policy"
   path = "/BatchSample/"
   policy = <<EOF
 {
@@ -234,7 +234,7 @@ resource "aws_iam_role_policy_attachment" "lambda-policy" {
 }
 
 resource "aws_lambda_function" "submit-job-function" {
-  function_name = "relive-cron-function"
+  function_name = "tuttofare-cron-function"
   filename = "lambda_function.zip"
   role = "${aws_iam_role.lambda-role.arn}"
   handler = "index.handler"
@@ -270,3 +270,26 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_send_job_test" {
     principal = "events.amazonaws.com"
     source_arn = "${aws_cloudwatch_event_rule.every_hour.arn}"
 }
+
+### DYNAMODB
+resource "aws_dynamodb_table" "tuttofare_config" {
+  name         = "tuttofare_config"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+}
+resource "aws_dynamodb_table" "tuttofare_metrics" {
+  name         = "tuttofare_config"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+}
+

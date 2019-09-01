@@ -1,5 +1,3 @@
-relive
-relive.pub
 config.yaml
 .vscode
 info
@@ -11,3 +9,7 @@ info
 *.tfstate
 *.tfstate.*
 
+tuttofare
+tuttofare.pub
+get.json
+metrics.txt

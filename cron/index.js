@@ -2,8 +2,8 @@ const Batch = require('aws-sdk/clients/batch')
 const uuid = require('uuid/v4')
 const util = require('util')
 
-const JOB_DEFINITION = "relive-job"
-const JOB_QUEUE = "relive-queue"
+const JOB_DEFINITION = "tuttofare-job"
+const JOB_QUEUE = "tuttofare-queue"
 
 const client = new Batch()
 
@@ -13,10 +13,6 @@ exports.handler = async (event) => {
       jobDefinition: JOB_DEFINITION,
       jobName: uuid(),
       jobQueue: JOB_QUEUE,
-      parameters: {
-        test: 'testparam',
-        job: JSON.stringify({type: 'mytest', value: 'ciao'})
-      }
     }
 
     result = await client.submitJob(params).promise()
