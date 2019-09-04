@@ -3,7 +3,6 @@ from datetime import datetime, time
 
 
 def get_all(config_aws):
-    #  get config servers from dynamo
     dynamodb = boto3.client(
         'dynamodb',
         aws_access_key_id=config_aws["ACCESS_KEY"],

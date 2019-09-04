@@ -47,6 +47,14 @@ def main():
         Item["metrics_name"] = {'S': sys.argv[7]}
         file = open(sys.argv[6])
         Item["metrics"] = {'S': file.read()}
+    elif sys.argv[1] == "parse":
+        Item["host"] = {'S': sys.argv[3]}
+        Item["user"] = {'S': sys.argv[4]}
+        Item["port"] = {'S': sys.argv[5]}
+        Item["file_path"] = {'S': sys.argv[6]}
+        Item["file_type"] = {'S': sys.argv[7]}
+        if len(sys.argv) > 8:
+            Item["optional_command"] = {'S': sys.argv[8]}
     else:
         print("wrong type")
         return

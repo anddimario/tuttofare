@@ -1,4 +1,4 @@
-from executors import commander, ping, metric
+from executors import commander, ping, metric, parser
 from libs import dynamodb, utils
 import slack
 import yaml
@@ -26,6 +26,8 @@ for item in items:
         notification_text = ping.run(item)
     elif item["tuttofare_type"]["S"] == "metric":
         metric.run(item, config["aws"])
+    elif item["tuttofare_type"]["S"] == "parse":
+        parser.run(item, config["aws"])
 
     # if interval != 0, set last execution on dynamo
     if int(item["interval"]["S"]) > 0:

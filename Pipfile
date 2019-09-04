@@ -11,6 +11,7 @@ boto3 = "*"
 pyyaml = "*"
 uuid = "*"
 dictor = "*"
+pyparsing = "*"
 
 [dev-packages]
 pylint = "*"

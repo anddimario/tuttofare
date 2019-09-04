@@ -7,6 +7,7 @@ variable "aws_region" {
 }
 
 variable "docker_image" {}
+variable "bucket_name" {}
 
 
 #
@@ -179,8 +180,8 @@ CONTAINER_PROPERTIES
 # helper to package the lambda function for deployment
 data "archive_file" "lambda_zip" {
   type = "zip"
-  source_file = "cron/index.js"
-  output_path = "lambda_function.zip"
+  source_file = "../..cron/index.js"
+  output_path = "/tmp/lambda_function.zip"
 }
 
 ## lambda resource + iam
@@ -241,14 +242,6 @@ resource "aws_lambda_function" "submit-job-function" {
   source_code_hash = "${data.archive_file.lambda_zip.output_base64sha256}"
   runtime = "nodejs8.10"
   depends_on = [ "aws_iam_role_policy_attachment.lambda-policy" ]
-  environment = {
-    variables = {
-      JOB_DEFINITION = "${aws_batch_job_definition.image-processor-job.arn}"
-      JOB_QUEUE = "${aws_batch_job_queue.image-processor.arn}"
-      IMAGES_BUCKET = "${aws_s3_bucket.image-bucket.id}"
-      IMAGES_TABLE = "${aws_dynamodb_table.image-table.id}"
-    }
-  }
 }
 # cron
 resource "aws_cloudwatch_event_rule" "every_hour" {
@@ -283,7 +276,7 @@ resource "aws_dynamodb_table" "tuttofare_config" {
   }
 }
 resource "aws_dynamodb_table" "tuttofare_metrics" {
-  name         = "tuttofare_config"
+  name         = "tuttofare_metrics"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "id"
 
@@ -293,3 +286,29 @@ resource "aws_dynamodb_table" "tuttofare_metrics" {
   }
 }
 
+### S3
+resource "aws_s3_bucket" "tuttofare_s3" {
+  bucket = "${var.bucket_name}"
+  acl    = "private"
+
+  tags = {
+    Name        = "TuttoFare Bucket"
+  }
+}
+
+### KINESIS
+resource "aws_kinesis_firehose_delivery_stream" "tuttofare_kinesis" {
+  name        = "tuttofare_kinesis"
+  destination = "extended_s3"
+
+  extended_s3_configuration {
+    role_arn   = "arn:aws:iam::817386470555:role/firehose_delivery_role"
+    bucket_arn = "arn:aws:s3:::${var.bucket_name}"
+
+    compression_format = "GZIP"
+
+    processing_configuration {
+      enabled = "false"
+    }
+  }
+}
