@@ -31,7 +31,9 @@ def main():
         Item["port"] = {'S': sys.argv[5]}
         Item["check_command"] = {'S': sys.argv[6]}
         Item["requested_value"] = {'S': sys.argv[7]} # output is a string in fabric
-        Item["fix_command"] = {'S': sys.argv[8]}
+        if len(sys.argv) > 8:
+            Item["fix_type"] = {'S': sys.argv[8]}
+            Item["fix"] = {'S': sys.argv[9]}
     elif sys.argv[1] == "ping":
         Item["host"] = {'S': sys.argv[3]}
         Item["timeout"] = {'S': sys.argv[4]}

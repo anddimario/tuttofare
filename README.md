@@ -64,11 +64,14 @@ terraform apply
 ### Create a config 
 #### Commander
 ```
-python scripts/add_config.py commander INTERVAL HOST USER PORT CHECK_COMMAND REQUESTED_VALUE FIX_COMMAND
-example: python scripts/add_config.py commander 1 localhost root 32768 "ps aux | grep ssh | wc -l" 4 "echo ciao"
+python scripts/add_config.py commander INTERVAL HOST USER PORT CHECK_COMMAND REQUESTED_VALUE FIX_TYPE FIX_SCRIPT
+example: python scripts/add_config.py commander 1 localhost root 32768 "ps aux | grep ssh | wc -l" 4 command "echo ciao"
 ```
 **Notes:**
 - `INTERVAL` is in minutes, if 0 the actions is done on every batch, otherwise is run if interval from the last execution is higher than the value
+- `FIX_TYPE`: script or command
+- `FIX_SCRIPT`: if script, it's a path where python script is stored and this script is launched as exec(). If command, run the command on remote host
+
 #### Ping
 ```
 python scripts/add_config.py ping INTERVAL URL TIMEOUT

@@ -19,5 +19,10 @@ def run(server):
     if result != server["requested_value"]["S"]:
         notification_text = server["host"]["S"] + " result: " + result
         # run custom command
-        result = c.run(server["fix_command"]["S"])
+        if "fix_type" in server.keys() and "fix" in server.keys():
+            if server["fix_script"]["S"] == "command":
+                result = c.run(server["fix_script"]["S"])
+            elif server["fix_script"]["S"] == "script":
+                result = exec(open(server["fix_script"]["S"]).read())
+
     return notification_text

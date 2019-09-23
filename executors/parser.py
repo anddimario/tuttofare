@@ -41,8 +41,10 @@ def run(server, config_aws):
         lineformat = re.compile(
             r"""(?P<month>\S+) - (?P<date>[0-9]{1,2})""", re.IGNORECASE)
         for l in result:
-            fields = parser_syslog.parse(l)
-            json_lines.append(fields)
+            data = parser_syslog.parse(l)
+            # Transform in byte as requested
+            data_as_bytes = json.dumps(data, indent=2).encode('utf-8')
+            json_lines.append(data_as_bytes)
         firehose_stream = config_aws["KINESIS_STREAM"]["syslog"]
     elif server["file_type"]["S"] == "nginx":
         # thanks: https://gist.github.com/hreeder/f1ffe1408d296ce0591d
